@@ -1,4 +1,3 @@
-// Lógica para abrir/fechar o Menu Hambúrguer no Mobile
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.header');
     const menuToggle = document.querySelector('.menu-toggle');
@@ -14,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     menuToggle.addEventListener('click', () => {
         const isActive = navMenu.classList.toggle('active');
         menuToggle.setAttribute('aria-expanded', isActive);
+
+        // Posiciona o menu exatamente abaixo do header
+        navMenu.style.top = header.offsetHeight + 'px';
 
         const icon = menuToggle.querySelector('i');
         if (isActive) {
@@ -49,9 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dots[activeIndex]) {
                 dots[activeIndex].classList.remove('is-active');
             }
-            
+
             activeIndex = (nextIndex + images.length) % images.length;
-            
+
             images[activeIndex].classList.add('is-active');
             if (dots[activeIndex]) {
                 dots[activeIndex].classList.add('is-active');
@@ -77,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
             const sectionHeight = section.offsetHeight;
-            
+
             if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
                 current = section.getAttribute('id') || 'inicio';
             }
@@ -96,21 +98,29 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', updateActiveLink, { passive: true });
 
     // --- SCROLL REVEAL ---
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal-visible');
-                revealObserver.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    });
+    const isMobile = window.innerWidth <= 768;
 
-    document.querySelectorAll('.reveal').forEach(el => {
-        revealObserver.observe(el);
-    });
+    if (isMobile) {
+        document.querySelectorAll('.reveal').forEach(el => {
+            el.classList.add('reveal-visible');
+        });
+    } else {
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            revealObserver.observe(el);
+        });
+    }
 });
 
 document.querySelectorAll("[data-slider]").forEach(slider => {
@@ -145,10 +155,8 @@ document.querySelectorAll("[data-slider]").forEach(slider => {
         if (Math.abs(distance) < 50) return;
 
         if (distance > 0) {
-            // esquerda
             showSlide((current + 1) % images.length);
         } else {
-            // direita
             showSlide((current - 1 + images.length) % images.length);
         }
     });

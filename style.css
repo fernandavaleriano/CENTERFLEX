@@ -1052,20 +1052,19 @@ a {
     .menu-toggle            { display: block; }
 
     .nav-menu {
-        position: absolute;
-        top: 76px;
-        left: -100%;
-        width: 100%;
-        background-color: rgba(17, 19, 23, 0.98);
-        flex-direction: column;
-        padding: 26px 24px;
-        gap: 20px;
-        transition: left 0.35s ease;
-        border-bottom: 2px solid rgba(244, 194, 20, 0.95);
-        /* Menu com cantos arredondados na base */
-        border-radius: 0 0 16px 16px;
-        z-index: 999;
-    }
+    position: fixed;  /* troca absolute por fixed */
+    top: 76px;
+    left: -100%;
+    width: 100%;
+    background-color: rgba(17, 19, 23, 0.98);
+    flex-direction: column;
+    padding: 26px 24px;
+    gap: 20px;
+    transition: left 0.35s ease;
+    border-bottom: 2px solid rgba(244, 194, 20, 0.95);
+    border-radius: 0 0 16px 16px;
+    z-index: 999;
+}
     .nav-menu.active        { left: 0; }
 
     /* ── Sub bar ── */
