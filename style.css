@@ -1024,54 +1024,32 @@ body::selection {
     letter-spacing: 0.02em;
 }
 
-/* ─── RESPONSIVIDADE ─── */
-@media (max-width: 992px) {
-    .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .benefits-container { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .contact-container { grid-template-columns: 1fr; }
-    .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-
-    .hero-container { grid-template-columns: 1fr; }
-    .hero-image {
-        height: 260px;
-        order: -1;
-    }
-    .hero-content { padding: 40px 20px; }
+/* ─── LINKS: remove cor azul do browser ─── */
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
-@media 
-
-(max-width: 768px) {
-
-    .hero-content h1 {
-        color: #fff;
-    }
-
-    .hero-content h1 .highlight,
-    .hero-content h1 span {
-        color: #f4c214;
-    }
-
+/* ─── RESPONSIVIDADE ─── */
+@media (max-width: 992px) {
+    .products-grid          { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .benefits-container     { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .contact-container      { grid-template-columns: 1fr; }
+    .footer-grid            { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .info-grid              { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hero-container         { grid-template-columns: 1fr; }
+    .hero-image             { height: 260px; order: -1; }
+    .hero-content           { padding: 40px 20px; }
 }
 
 @media (max-width: 768px) {
-    .header .container {
-        padding: 0 10px;
-    }
 
-    .hero-container {
-        padding: 0;
-    }
+    /* ── Header / Nav ── */
+    .header .container      { padding: 0 10px; }
 
-    .hero-content {
-        border-radius: 0;
-        padding: 40px 16px;
-    }
-
-    .desktop-only { display: none; }
-    .mobile-only { display: inline-flex; }
-    .menu-toggle { display: block; }
+    .desktop-only           { display: none; }
+    .mobile-only            { display: inline-flex; }
+    .menu-toggle            { display: block; }
 
     .nav-menu {
         position: absolute;
@@ -1084,12 +1062,14 @@ body::selection {
         gap: 20px;
         transition: left 0.35s ease;
         border-bottom: 2px solid rgba(244, 194, 20, 0.95);
+        /* Menu com cantos arredondados na base */
+        border-radius: 0 0 16px 16px;
         z-index: 999;
     }
+    .nav-menu.active        { left: 0; }
 
-    .nav-menu.active { left: 0; }
-
-    .sub-bar-container { flex-wrap: wrap; }
+    /* ── Sub bar ── */
+    .sub-bar-container      { flex-wrap: wrap; }
     .sub-item {
         flex: 0 0 50%;
         border-right: none;
@@ -1098,97 +1078,69 @@ body::selection {
         padding-left: 20px;
     }
 
-    .products-grid { grid-template-columns: 1fr; }
-    .benefits-container { grid-template-columns: 1fr; gap: 14px; }
-    .benefit-item { padding: 20px 18px; }
-    .info-grid { grid-template-columns: 1fr; }
-    .form-row { grid-template-columns: 1fr; }
-    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
-    .footer-grid { padding-bottom: 32px; }
-}
-
-/* RESPONSIVO */
-
-@media (max-width: 768px) {
-
-    .products-section {
-        padding: 80px 0;
-    }
-
-    .section-title {
-        font-size: 2rem;
-    }
-
-    .products-grid {
-        gap: 20px;
-    }
-
-    .pcard {
-        border-radius: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-
+    /* ── Hero ── */
+    .hero-container         { padding: 0; }
     .hero-content {
+        border-radius: 0;
+        padding: 40px 16px;
         position: relative;
         z-index: 2;
-    }
-
-    .hero-image,
-    .hero-overlay {
-        z-index: 1;
-    }
-
-}
-
-@media (max-width: 768px) {
-
-    .products-section {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        height: auto !important;
-        overflow: visible !important;
-        padding: 80px 0;
-    }
-
-    .products-grid {
-        display: grid !important;
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-}
-
-@media (max-width: 768px) {
-
-    .hero-content p,
-    .hero-description {
-        color: #fff !important;
-    }
-
-}
-
-@media (max-width: 768px) {
-
-    .hero-content p,
-    .hero-description {
-        color: #fff !important;
-        text-shadow: 0 2px 8px rgba(0,0,0,.6);
-    }
-
-}
-
-
-@media (max-width: 768px) {
-
-    .hero-content {
         background: linear-gradient(
             to bottom,
-            rgba(0,0,0,.45),
-            rgba(0,0,0,.25)
+            rgba(0, 0, 0, .45),
+            rgba(0, 0, 0, .25)
         );
     }
+    .hero-image,
+    .hero-overlay           { z-index: 1; }
+
+    .hero-content h1        { color: #fff; }
+    .hero-content h1 .highlight,
+    .hero-content h1 span   { color: #f4c214; }
+
+    .hero-content p,
+    .hero-description {
+        color: #fff;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, .6);
+    }
+
+    /* ── Produtos ── */
+    .products-section       { padding: 60px 0; }  /* era 80px — remove espaço vazio */
+    .products-grid          { grid-template-columns: 1fr; gap: 20px; }
+    .section-title          { font-size: 2rem; }
+    .pcard                  { border-radius: 20px; }
+
+    /* ── Benefícios ── */
+    .benefits-container     { grid-template-columns: 1fr; gap: 14px; }
+    .benefit-item           { padding: 20px 18px; }
+
+    /* ── Misc ── */
+    .info-grid              { grid-template-columns: 1fr; }
+    .form-row               { grid-template-columns: 1fr; }
+    .footer-grid            { grid-template-columns: 1fr; gap: 28px; padding-bottom: 32px; } 
+
+    /* ── Produtos ── */
+.products-section {
+    padding: 60px 0;
+    overflow: visible !important; /* garante que o reveal funcione */
+}
+/* força visibilidade caso o JS falhe no mobile */
+.products-section.reveal {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+@media (max-width: 768px) {
+    .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .reveal-visible {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
 
 }
+
