@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     menuToggle.addEventListener('click', () => {
         const isActive = navMenu.classList.toggle('active');
         menuToggle.setAttribute('aria-expanded', isActive);
-
-        // Posiciona o menu exatamente abaixo do header
         navMenu.style.top = header.offsetHeight + 'px';
 
         const icon = menuToggle.querySelector('i');
@@ -37,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- PRODUCT IMAGE SLIDER ---
     document.querySelectorAll('[data-slider]').forEach(slider => {
         const images = Array.from(slider.querySelectorAll('img'));
         const arrows = Array.from(slider.querySelectorAll('.pcard-arrow'));
@@ -48,20 +47,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const showImage = (nextIndex) => {
             images[activeIndex].classList.remove('is-active');
-            if (dots[activeIndex]) {
-                dots[activeIndex].classList.remove('is-active');
-            }
+            if (dots[activeIndex]) dots[activeIndex].classList.remove('is-active');
 
             activeIndex = (nextIndex + images.length) % images.length;
 
             images[activeIndex].classList.add('is-active');
-            if (dots[activeIndex]) {
-                dots[activeIndex].classList.add('is-active');
-            }
+            if (dots[activeIndex]) dots[activeIndex].classList.add('is-active');
         };
 
         arrows.forEach(arrow => {
-            arrow.addEventListener('click', () => {
+            arrow.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const direction = arrow.dataset.direction;
                 showImage(direction === 'prev' ? activeIndex - 1 : activeIndex + 1);
             });
@@ -79,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
             const sectionHeight = section.offsetHeight;
-
             if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
                 current = section.getAttribute('id') || 'inicio';
             }
@@ -97,67 +92,129 @@ document.addEventListener('DOMContentLoaded', () => {
     updateActiveLink();
     window.addEventListener('scroll', updateActiveLink, { passive: true });
 
-    // --- SCROLL REVEAL ---
-    const isMobile = window.innerWidth <= 768;
+    // ─── LIGHTBOX ─────────────────────────────────────────────
+    const lightbox     = document.getElementById('lightbox');
+    const lightboxImg  = document.getElementById('lightbox-img');
+    const lightboxClose = lightbox.querySelector('.lightbox-close');
+    const lightboxPrev  = lightbox.querySelector('.lightbox-arrow-left');
+    const lightboxNext  = lightbox.querySelector('.lightbox-arrow-right');
+    const lightboxCounter = document.getElementById('lightbox-counter');
 
-    if (isMobile) {
-        document.querySelectorAll('.reveal').forEach(el => {
-            el.classList.add('reveal-visible');
-        });
-    } else {
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('reveal-visible');
-                    revealObserver.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        });
+    let lightboxImages = [];
+    let lightboxIndex  = 0;
 
-        document.querySelectorAll('.reveal').forEach(el => {
-            revealObserver.observe(el);
-        });
+    function openLightbox(images, index) {
+        lightboxImages = images;
+        lightboxIndex  = index;
+        lightboxImg.src = images[index].src;
+        lightboxImg.alt = images[index].alt;
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        updateLightboxNav();
     }
+
+    function closeLightbox() {
+        lightbox.classList.remove('is-open');
+        document.body.style.overflow = '';
+        lightboxImages = [];
+        lightboxIndex  = 0;
+    }
+
+    function goToImage(index) {
+        if (!lightboxImages.length) return;
+        lightboxIndex = (index + lightboxImages.length) % lightboxImages.length;
+        lightboxImg.src = lightboxImages[lightboxIndex].src;
+        lightboxImg.alt = lightboxImages[lightboxIndex].alt;
+        updateLightboxNav();
+    }
+
+    function updateLightboxNav() {
+        const many = lightboxImages.length > 1;
+        lightboxPrev.style.display = many ? '' : 'none';
+        lightboxNext.style.display = many ? '' : 'none';
+        lightboxCounter.style.display = many ? '' : 'none';
+        if (many) lightboxCounter.textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
+    }
+
+    // Clique nas imagens dos produtos
+    document.querySelectorAll('.pcard-img').forEach(imgWrapper => {
+        imgWrapper.addEventListener('click', (e) => {
+            // Ignora clique nas setas do slider
+            if (e.target.closest('.pcard-arrow')) return;
+
+            const images = Array.from(imgWrapper.querySelectorAll('img'));
+            if (!images.length) return;
+
+            // Para sliders usa a imagem ativa; para cards simples usa a primeira
+            const isSlider = imgWrapper.hasAttribute('data-slider');
+            let activeIndex = 0;
+
+            if (isSlider) {
+                images.forEach((img, i) => {
+                    if (img.classList.contains('is-active')) activeIndex = i;
+                });
+            }
+            // Caso nenhuma tenha is-active, activeIndex permanece 0 (seguro)
+
+            openLightbox(images, activeIndex);
+        });
+
+        // Cursor de ponteiro para indicar que é clicável
+        imgWrapper.style.cursor = 'zoom-in';
+    });
+
+    lightboxClose.addEventListener('click', closeLightbox);
+
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+
+    lightboxPrev.addEventListener('click', () => goToImage(lightboxIndex - 1));
+    lightboxNext.addEventListener('click', () => goToImage(lightboxIndex + 1));
+
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('is-open')) return;
+        if (e.key === 'Escape')     closeLightbox();
+        if (e.key === 'ArrowLeft')  goToImage(lightboxIndex - 1);
+        if (e.key === 'ArrowRight') goToImage(lightboxIndex + 1);
+    });
+
+    // Swipe no lightbox (mobile)
+    let touchStartX = 0;
+    lightbox.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    lightbox.addEventListener('touchend', (e) => {
+        const diff = touchStartX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 50) goToImage(lightboxIndex + (diff > 0 ? 1 : -1));
+    }, { passive: true });
 });
 
+// ─── SWIPE NOS SLIDERS (cards) ──────────────────────────────
 document.querySelectorAll("[data-slider]").forEach(slider => {
     const images = slider.querySelectorAll("img");
-    const dots = slider.querySelectorAll(".dot");
+    const dots   = slider.querySelectorAll(".dot");
 
     let current = 0;
-    let startX = 0;
-    let endX = 0;
+    let startX  = 0;
 
     function showSlide(index) {
-        images.forEach((img, i) => {
-            img.classList.toggle("is-active", i === index);
-        });
-
-        dots.forEach((dot, i) => {
-            dot.classList.toggle("is-active", i === index);
-        });
-
+        images.forEach((img, i) => img.classList.toggle("is-active", i === index));
+        dots.forEach((dot, i)   => dot.classList.toggle("is-active", i === index));
         current = index;
     }
 
     slider.addEventListener("touchstart", e => {
         startX = e.touches[0].clientX;
-    });
+    }, { passive: true });
 
     slider.addEventListener("touchend", e => {
-        endX = e.changedTouches[0].clientX;
-
-        const distance = startX - endX;
-
-        if (Math.abs(distance) < 50) return;
-
-        if (distance > 0) {
-            showSlide((current + 1) % images.length);
-        } else {
-            showSlide((current - 1 + images.length) % images.length);
-        }
-    });
+        const dist = startX - e.changedTouches[0].clientX;
+        if (Math.abs(dist) < 50) return;
+        showSlide(dist > 0
+            ? (current + 1) % images.length
+            : (current - 1 + images.length) % images.length
+        );
+    }, { passive: true });
 });
