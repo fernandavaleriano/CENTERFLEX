@@ -217,4 +217,4 @@ document.querySelectorAll("[data-slider]").forEach(slider => {
             : (current - 1 + images.length) % images.length
         );
     }, { passive: true });
-});
+});p
