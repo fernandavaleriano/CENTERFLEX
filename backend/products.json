@@ -1,0 +1,108 @@
+[
+  {
+    "id": "abracadeiras",
+    "name": "Abraçadeiras",
+    "description": "Fixação segura para montagem, vedação e suporte em aplicações hidráulicas e industriais.",
+    "images": [
+      "imagens/abraçadeiras vermelhas.png"
+    ]
+  },
+  {
+    "id": "aneis-o-ring",
+    "name": "Anéis O-Ring",
+    "description": "Elementos de vedação para reduzir vazamentos e manter o desempenho do sistema.",
+    "images": [
+      "imagens/Aneis Oring.png"
+    ]
+  },
+  {
+    "id": "conexoes-de-latao",
+    "name": "Conexões de latão",
+    "description": "Peças resistentes para linhas de ar comprimido, com boa durabilidade e encaixe preciso.",
+    "images": [
+      "imagens/conexoesbotao.png",
+      "imagens/Condiçõesdde latão2.jpeg"
+    ]
+  },
+  {
+    "id": "conexoes-porca-e-anel",
+    "name": "Conexões porca e anel",
+    "description": "Solução DIN 2353 para montagens firmes, seguras e com excelente acabamento técnico.",
+    "images": [
+      "imagens/Conexoes porca e anel (DIN 2353).jfif"
+    ]
+  },
+  {
+    "id": "conexoes-galvanizadas",
+    "name": "Conexões galvanizadas",
+    "description": "Conexões com revestimento galvanizado para resistência à corrosão em tubulações e sistemas hidráulicos.",
+    "images": [
+      "imagens/Conexõesgalvanizadas.png"
+    ]
+  },
+  {
+    "id": "conexao-de-ar-comprimido",
+    "name": "Conexão de ar comprimido",
+    "description": "Conexões resistentes para sistemas pneumáticos e linhas de ar comprimido industrial.",
+    "images": [
+      "imagens/arcomprimido.jpeg"
+    ]
+  },
+  {
+    "id": "engates",
+    "name": "Engates",
+    "description": "Conexão prática para acoplamento e desacoplamento de linhas hidráulicas com segurança e agilidade.",
+    "images": [
+      "imagens/engate-rapido-hidraulico-03.webp",
+      "imagens/engates-rapidos.png"
+    ]
+  },
+  {
+    "id": "engates-para-ar-comprimido-e-liquidos-baixa-pressao",
+    "name": "Engates para ar comprimido e líquidos baixa pressão",
+    "description": "Engates para conexão rápida em sistemas pneumáticos e linhas de líquidos de baixa pressão.",
+    "images": [
+      "imagens/Engatesparaar comprimidolíquidos baixa pressão.png"
+    ]
+  },
+  {
+    "id": "mangueiras-hidraulicas",
+    "name": "Mangueiras hidráulicas",
+    "description": "Mangueiras para sistemas de pressão, condução de óleo e aplicações hidráulicas exigentes.",
+    "images": [
+      "imagens/mangueirashidraulicas (2).png"
+    ]
+  },
+  {
+    "id": "mangueiras-industriais",
+    "name": "Mangueiras industriais",
+    "description": "Opções para condução de ar, água e fluidos em rotinas industriais e de manutenção.",
+    "images": [
+      "imagens/Mangueiras industriais.png"
+    ]
+  },
+  {
+    "id": "tubos",
+    "name": "Tubos",
+    "description": "Tubos resistentes para instalações, condução e aplicações técnicas com bom acabamento.",
+    "images": [
+      "imagens/todosostubos.jpeg"
+    ]
+  },
+  {
+    "id": "conexoes-jic",
+    "name": "Conexões JIC",
+    "description": "Conexões JIC (Joint Industry Council) para sistemas hidráulicos de alta pressão com encaixe por 37º",
+    "images": [
+      "imagens/conexoesjic.png"
+    ]
+  },
+  {
+    "id": "valvulas-esfera-baixa-e-alta-pressao",
+    "name": "Válvulas esfera baixa e alta pressão",
+    "description": "Válvulas para bloqueio e controle de fluxo em sistemas hidráulicos, pneumáticos e industriais.",
+    "images": [
+      "imagens/válvulas esfera baixa e alta pressão.png"
+    ]
+  }
+]

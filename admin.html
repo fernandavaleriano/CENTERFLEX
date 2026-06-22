@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin | Centerflex</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <main class="login-shell" id="login-shell">
+        <form class="login-card" id="login-form">
+            <span class="eyebrow">Centerflex</span>
+            <h1>Entrar no painel</h1>
+            <p>Acesse com usuario e senha para gerenciar os produtos do site.</p>
+
+            <label for="admin-username">Usuario</label>
+            <input id="admin-username" type="text" autocomplete="username" required>
+
+            <label for="admin-password">Senha</label>
+            <input id="admin-password" type="password" autocomplete="current-password" required>
+
+            <button class="primary full-button" type="submit">Entrar</button>
+            <p class="status" id="login-status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <main class="admin-shell is-hidden" id="admin-shell">
+        <header class="admin-header">
+            <div>
+                <span class="eyebrow">Centerflex</span>
+                <h1>Painel de produtos</h1>
+            </div>
+            <div class="header-actions">
+                <a class="site-link" href="/" target="_blank" rel="noopener noreferrer">Ver site</a>
+                <button class="secondary" id="logout-button" type="button">Sair</button>
+            </div>
+        </header>
+
+        <section class="admin-layout">
+            <form class="product-form" id="product-form">
+                <input type="hidden" id="product-id">
+                <h2 id="form-title">Adicionar produto</h2>
+
+                <label for="product-name">Nome do produto</label>
+                <input id="product-name" type="text" required maxlength="90">
+
+                <label for="product-description">Descrição</label>
+                <textarea id="product-description" required rows="5" maxlength="320"></textarea>
+
+                <label>Imagens do produto</label>
+                <div class="image-manager">
+                    <div class="image-preview-list" id="image-preview-list"></div>
+                    <label class="upload-box" for="product-image-files">
+                        <span>Carregar imagem do computador</span>
+                        <small>PNG, JPG, JPEG, JFIF ou WEBP</small>
+                    </label>
+                    <input id="product-image-files" class="file-input" type="file" accept="image/png,image/jpeg,image/webp,.jfif" multiple>
+                </div>
+
+                <label for="product-image-url">Adicionar por caminho existente</label>
+                <div class="image-url-row">
+                    <input id="product-image-url" type="text" placeholder="Ex: imagens/produto.png">
+                    <button class="secondary" id="add-image-url" type="button">Adicionar</button>
+                </div>
+
+                <div class="form-actions">
+                    <button class="primary" type="submit">Salvar produto</button>
+                    <button class="secondary" id="clear-form" type="button">Novo</button>
+                </div>
+            </form>
+
+            <section class="products-panel">
+                <div class="panel-heading">
+                    <h2>Produtos cadastrados</h2>
+                    <button id="reload-products" type="button">Atualizar</button>
+                </div>
+                <p class="status" id="status" aria-live="polite"></p>
+                <div class="admin-products" id="admin-products"></div>
+            </section>
+        </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

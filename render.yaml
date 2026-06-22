@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: centerflex-api
+    env: node
+    buildCommand: npm install
+    startCommand: node backend/server.js
+    envVars:
+      - key: ADMIN_USER
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: centerflexjulio2023
+      - key: PORT
+        value: 10000
