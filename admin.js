@@ -107,6 +107,13 @@ const clearForm = () => {
     productName.focus();
 };
 
+const imgUrl = (src) => {
+    if (!src) return '';
+    if (src.startsWith('http')) return src;
+    const baseUrl = API_URL.replace(/\/+$/, '');
+    return `${baseUrl}/${src.replace(/^\//, '')}`;
+};
+
 const renderProducts = () => {
     if (!products.length) {
         productsList.innerHTML = '<p>Nenhum produto cadastrado.</p>';
@@ -115,7 +122,7 @@ const renderProducts = () => {
 
     productsList.innerHTML = products.map(product => `
         <article class="admin-product">
-            <img src="${escapeHtml(product.images?.[0] || '')}" alt="${escapeHtml(product.name)}">
+            <img src="${escapeHtml(imgUrl(product.images?.[0]))}" alt="${escapeHtml(product.name)}">
             <div>
                 <h3>${escapeHtml(product.name)}</h3>
                 <p>${escapeHtml(product.description)}</p>
@@ -161,7 +168,12 @@ const uploadSelectedImages = async () => {
         body: formData
     });
 
-    setImages([...imagePaths, ...data.images]);
+    // Converte caminhos relativos para URL completa do Render
+    const baseUrl = API_URL.replace(/\/+$/, '');
+    const fullPaths = data.images.map(img =>
+        img.startsWith('http') ? img : `${baseUrl}/${img.replace(/^\//, '')}`
+    );
+    setImages([...imagePaths, ...fullPaths]);
     imageFiles.value = '';
     setStatus('Imagem adicionada. Clique em salvar produto para publicar.');
 };
