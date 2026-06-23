@@ -59,14 +59,22 @@ const request = async (path, options = {}) => {
 
     if (!isFormData) headers['Content-Type'] = 'application/json';
 
-    const response = await fetch(api(path), {
-        ...options,
-        headers
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000);
 
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || 'Erro ao conversar com a API');
-    return data;
+    try {
+        const response = await fetch(api(path), {
+            ...options,
+            headers,
+            signal: controller.signal
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Erro ao conversar com a API');
+        return data;
+    } finally {
+        clearTimeout(timeout);
+    }
 };
 
 const renderImageManager = () => {
