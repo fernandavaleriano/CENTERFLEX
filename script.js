@@ -17,11 +17,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
     };
 
+    const imageUrl = (src) => {
+        if (!src) return '';
+        if (/^(https?:|data:|blob:)/i.test(src)) return src;
+        const apiUrl = typeof API_URL !== 'undefined' ? API_URL.replace(/\/+$/, '') : '';
+        return `${apiUrl}/${src.replace(/^\/+/, '')}`;
+    };
+
     const renderProductCard = (product) => {
         const images = Array.isArray(product.images) ? product.images.filter(Boolean) : [];
         const hasSlider = images.length > 1;
         const imageMarkup = images.map((src, index) => (
-            `<img src="${escapeHtml(src)}" alt="${escapeHtml(product.name)}${hasSlider ? ` - imagem ${index + 1}` : ''}"${index === 0 ? ' class="is-active"' : ''}>`
+            `<img src="${escapeHtml(imageUrl(src))}" alt="${escapeHtml(product.name)}${hasSlider ? ` - imagem ${index + 1}` : ''}"${index === 0 ? ' class="is-active"' : ''}>`
         )).join('');
         const controls = hasSlider ? `
             <button class="pcard-arrow pcard-arrow-left" type="button" data-direction="prev" aria-label="Ver imagem anterior">
