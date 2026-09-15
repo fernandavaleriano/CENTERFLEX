@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs/promises');
 const path = require('path');
 const crypto = require('crypto');
+const { createClient } = require('@supabase/supabase-js');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const loadEnvFile = () => {
@@ -32,14 +33,22 @@ loadEnvFile();
 const PORT = Number(process.env.PORT || 3000);
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const PRODUCTS_FILE = path.join(__dirname, 'products.json');
-const UPLOADS_DIR = path.join(ROOT_DIR, 'imagens', 'uploads');
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const STORAGE_BUCKET = 'product-images';
 const sessions = new Set();
 
 if (!ADMIN_PASSWORD) {
     console.error('Configure ADMIN_PASSWORD no arquivo .env ou nas variaveis do servidor.');
     process.exit(1);
 }
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+    console.error('Configure SUPABASE_URL e SUPABASE_KEY no arquivo .env ou nas variaveis do servidor.');
+    process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const MIME_TYPES = {
     '.html': 'text/html; charset=utf-8',
@@ -107,12 +116,9 @@ const slugify = (value) => String(value || 'produto')
     .slice(0, 60) || 'produto';
 
 const loadProducts = async () => {
-    const file = await fs.readFile(PRODUCTS_FILE, 'utf8');
-    return JSON.parse(file);
-};
-
-const saveProducts = async (products) => {
-    await fs.writeFile(PRODUCTS_FILE, `${JSON.stringify(products, null, 2)}\n`, 'utf8');
+    const { data, error } = await supabase.from('products').select('*').order('name');
+    if (error) throw new Error(error.message);
+    return data;
 };
 
 const normalizeProduct = (input, fallbackId) => {
@@ -206,8 +212,6 @@ const handleUploadApi = async (req, res) => {
     const allowedExtensions = new Set(['.png', '.jpg', '.jpeg', '.jfif', '.webp']);
     const saved = [];
 
-    await fs.mkdir(UPLOADS_DIR, { recursive: true });
-
     for (const file of files) {
         const ext = path.extname(file.filename).toLowerCase();
         if (!allowedTypes.has(file.contentType) && !allowedExtensions.has(ext)) {
@@ -215,8 +219,20 @@ const handleUploadApi = async (req, res) => {
         }
 
         const filename = safeUploadName(file.filename);
-        await fs.writeFile(path.join(UPLOADS_DIR, filename), file.buffer);
-        saved.push(`imagens/uploads/${filename}`);
+        const { error: uploadError } = await supabase.storage
+            .from(STORAGE_BUCKET)
+            .upload(filename, file.buffer, {
+                contentType: file.contentType || 'image/png',
+                upsert: false
+            });
+
+        if (uploadError) throw new Error(uploadError.message);
+
+        const { data: publicUrlData } = supabase.storage
+            .from(STORAGE_BUCKET)
+            .getPublicUrl(filename);
+
+        saved.push(publicUrlData.publicUrl);
     }
 
     if (!saved.length) {
@@ -236,34 +252,52 @@ const handleProductsApi = async (req, res, pathname) => {
     if (!requireAdmin(req, res)) return;
 
     if (req.method === 'POST' && pathname === '/api/products') {
-        const products = await loadProducts();
         const body = await readBody(req);
         let product = normalizeProduct(body, slugify(body.name));
+
         const baseId = product.id;
         let suffix = 2;
-        while (products.some(item => item.id === product.id)) {
+        while (true) {
+            const { data: existing, error: checkError } = await supabase
+                .from('products')
+                .select('id')
+                .eq('id', product.id)
+                .maybeSingle();
+            if (checkError) throw new Error(checkError.message);
+            if (!existing) break;
             product.id = `${baseId}-${suffix}`;
             suffix += 1;
         }
-        products.push(product);
-        await saveProducts(products);
+
+        const { error: insertError } = await supabase.from('products').insert(product);
+        if (insertError) return sendJson(res, 500, { error: insertError.message });
         return sendJson(res, 201, product);
     }
 
     if (req.method === 'PUT' && id) {
-        const products = await loadProducts();
-        const index = products.findIndex(product => product.id === id);
-        if (index === -1) return sendJson(res, 404, { error: 'Produto nao encontrado' });
-        products[index] = normalizeProduct({ ...await readBody(req), id }, id);
-        await saveProducts(products);
-        return sendJson(res, 200, products[index]);
+        const body = await readBody(req);
+        const product = normalizeProduct({ ...body, id }, id);
+
+        const { data: updated, error: updateError } = await supabase
+            .from('products')
+            .update(product)
+            .eq('id', id)
+            .select()
+            .maybeSingle();
+
+        if (updateError) return sendJson(res, 500, { error: updateError.message });
+        if (!updated) return sendJson(res, 404, { error: 'Produto nao encontrado' });
+        return sendJson(res, 200, updated);
     }
 
     if (req.method === 'DELETE' && id) {
-        const products = await loadProducts();
-        const nextProducts = products.filter(product => product.id !== id);
-        if (nextProducts.length === products.length) return sendJson(res, 404, { error: 'Produto nao encontrado' });
-        await saveProducts(nextProducts);
+        const { error: deleteError, count } = await supabase
+            .from('products')
+            .delete({ count: 'exact' })
+            .eq('id', id);
+
+        if (deleteError) return sendJson(res, 500, { error: deleteError.message });
+        if (!count) return sendJson(res, 404, { error: 'Produto nao encontrado' });
         return sendJson(res, 200, { ok: true });
     }
 
