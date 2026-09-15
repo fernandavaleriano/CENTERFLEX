@@ -372,5 +372,4 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
     console.log(`Centerflex rodando em http://localhost:${PORT}`);
     console.log(`Painel admin: http://localhost:${PORT}/admin.html`);
-    console.log(`Login padrao: ${ADMIN_USER} / ${ADMIN_PASSWORD}`);
 });
